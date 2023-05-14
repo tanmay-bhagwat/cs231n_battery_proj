@@ -2,6 +2,7 @@
 # coding: utf-8
 
 from scipy.io import loadmat
+import math
 import numpy as np
 import pandas as pd
 import os
@@ -45,7 +46,6 @@ Hence, adjacent overlap = (n*/floor(L/n) - (L-n))/(ceil(L/n)-1)
 """
 
 #################### Example code ########################
-import math
 n=225
 L=len(df)
 print(L)
@@ -71,7 +71,6 @@ def slicer(df: pd.DataFrame) -> pd.DataFrame:
     Return:
     slices: Slices of DataFrame
     """
-    import math
     init_M=math.floor(L/n)
     overlap=math.floor((init_M*n-(L-n))/(math.ceil(L/n)-1)) 
     indices = np.array([n*j-j*overlap for j in range(0,math.ceil(L/n))])
