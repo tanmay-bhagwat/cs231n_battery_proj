@@ -7,7 +7,7 @@ import pandas as pd
 import os
 from PIL import Image
 from matplotlib.pyplot import imshow
-from .utils import *
+from utils import *
 os.chdir(r'/Users/tanmay/Desktop/CS231N/Project/')
 
 
