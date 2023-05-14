@@ -44,20 +44,21 @@ import math
 def slicer(df: pd.DataFrame) -> pd.DataFrame:
     """
     Function takes in DataFrame and returns slices as per overlap explanation above
+    Still have to force the last index to be L-n (unclear how to get the correct last index from overlap formula)
     Inputs:
     df : pd.DataFrame
     
     Return:
-    slices: Slices of DataFrame
+    slices: Slice view of pd.DataFrame
     """
     L = len(df)
     n = 225
-    init_M=math.floor(L/n)
-    overlap=math.floor((init_M*n-(L-n))/(math.ceil(L/n)-1)) 
+    init_M = math.floor(L/n)
+    overlap = math.floor((init_M*n-(L-n))/(math.ceil(L/n)-1)) 
     
     indices = np.array([n*j-j*overlap for j in range(0,math.ceil(L/n))])
     indices = np.where(indices>0,indices,0)
-    print(indices)
+    indices[-1] = L-n
     slices = [df.iloc[j:j+n,:] for j in indices]
     
     return slices
@@ -81,3 +82,32 @@ def make_im(df_slice: pd.DataFrame) -> np.ndarray:
         plot_arr=np.dstack(im_arr)
         
     return plot_arr
+
+
+def data_loader(mode=0):
+    if mode == 0:
+        # Working "ExampleDC_C1.mat" MATLAB data to DataFrame
+        # Converts all DC_C1.ch data from struct into dict
+        mat_contents = loadmat('ExampleDC_C1.mat')
+        data = mat_contents['ExampleDC_C1']['ch'][0][0]
+        dict_vals = [x[:,0] for x in data[0][0]]
+        dict_keys = list(data.dtype.names)
+        fin_dict = dict(zip(dict_keys, dict_vals))
+
+        return fin_dict 
+    
+    if mode == 1:
+        # Working with Oxford_Battery_Degradation_Dataset_1.mat
+        # Converts all of the Cell{i}.ch data from struct to dict
+        mat_contents = loadmat("Oxford_Battery_Degradation_Dataset_1.mat")
+        data_dict = {f"Cell{i}":{} for i in range(1,9)}
+        for i in range(1,9):
+            for cycle in mat_contents[f'Cell{i}'].dtype.names:
+                data = mat_contents[f'Cell{i}'][cycle][0][0][0][0][0][0][0]
+                dict_vals = [x[:,0] for x in data]
+                dict_keys = list(data.dtype.names)
+                fin_dict = dict(zip(dict_keys, dict_vals))
+                data_dict[f'Cell{i}'][cycle] = pd.DataFrame.from_dict(fin_dict)
+        
+        return data_dict
+
