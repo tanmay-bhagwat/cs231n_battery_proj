@@ -85,6 +85,16 @@ def make_im(df_slice: pd.DataFrame) -> np.ndarray:
 
 
 def data_loader(mode=0):
+    """
+    Function loads data from required dataset based on 'mode' keyword. 
+    Inputs:
+    mode: int, 0 for ExampleDC_C1.mat or 1 for Oxford full dataset
+    
+    Return:
+    If mode = 0, then returns a dict with headings 'i', 'v', 't', 'T', 'q'
+    If mode = 1, then returns a dict of dicts, where each outer key is the cell #, inner dict is the cycle number 
+    with DataFrame of 'q', 'v', 'T', 't'
+    """
     if mode == 0:
         # Working "ExampleDC_C1.mat" MATLAB data to DataFrame
         # Converts all DC_C1.ch data from struct into dict
