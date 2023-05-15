@@ -11,6 +11,9 @@ from utils import *
 os.chdir(r'/Users/tanmay/Desktop/CS231N/Project/')
 
 
+###################################################################
+#DATASET SELECTION
+
 # # Working with ExampleDC_C1.mat 
 # fin_dict=data_loader()
 # #Convert dictionary to DataFrame
@@ -20,15 +23,6 @@ os.chdir(r'/Users/tanmay/Desktop/CS231N/Project/')
 # # Dropping all columns not v,T or i
 # df=df.drop(['t','q'],axis=1)
 # df.head()
-
-# slices = slicer(df)
-# images = []
-# for i in range(len(slices)):
-#     image=Image.fromarray(make_im(slices[i]),mode='RGB')
-#     #image.show()
-#     images.append(image)
-# #images[0].show()
-
 
 # Working with full Oxford dataset
 fin_dict = data_loader(mode=1)
@@ -40,16 +34,27 @@ df['i'] = [0]*len(df)
 for j in range(1, len(df)):
   df['i'][j] = (df['q'][j] - df['q'][j-1])*3600    
 print(df.head(), type(df['i']))                    
+###################################################################
+
+#PREPROCESSING STEPS
 
 # Slicing given dataframe into chunks
 slices = slicer(df)
-#print(fin_dict['Cell2']['cyc0100'].shape)
-#print(len(slices))
 
-# Converting chunks into images
+# Converting chunks into images using matplotlib
 images = []
 i = 0
 for i in range(len(slices)):
-    image = Image.fromarray(make_im(slices[i]),mode='RGB')
-    images.append(image)
-#print(len(images))
+  image = make_im(slices[i]) #image is a (15,15,3) np array
+  images.append(image)
+#plt.imshow(images[0])
+#plt.show()
+
+# Converting chunks into images using PIL
+# i = 0
+# for i in range(len(slices)):
+#     image = Image.merge("RGB", make_im(slices[i])) #image is an Image object
+#     images.append(image)
+#     #image.show()
+
+###################################################################
