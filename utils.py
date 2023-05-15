@@ -76,10 +76,10 @@ def make_im(df_slice: pd.DataFrame) -> np.ndarray:
     """
     im_arr=[]
     for key in ['i','v','T']:
-        arr=np.array(df_slice[key])
-        plot_arr=255*(arr-np.min(arr))/(np.max(arr)-np.min(arr))
+        arr = np.array(df_slice[key])
+        plot_arr = (arr-np.min(arr))/(np.max(arr)-np.min(arr))
         im_arr.append(plot_arr.reshape((15,15)))
-        plot_arr=np.dstack(im_arr)
+    plot_arr = np.dstack(im_arr)
         
     return plot_arr
 
