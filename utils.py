@@ -64,7 +64,26 @@ def slicer(df: pd.DataFrame) -> pd.DataFrame:
     return slices
 
 
-def make_im(df_slice: pd.DataFrame) -> np.ndarray:
+def make_im_Image(df_slice: pd.DataFrame) -> np.ndarray:
+    """
+    Function returns a normalized (15,15,3) array from given slice of DataFrame
+    Order of stacking is 'i','v','T'
+    Inputs:
+    df_slice: Slice of DataFrame, containing keys 'i','v','T', each of size 225
+    
+    Return:
+    plot_arr: np.ndarray
+    """
+    im_arr=[]
+    for key in ['i','v','T']:
+        arr = np.array(df_slice[key])
+        plot_arr = 255*(arr-np.min(arr))/(np.max(arr)-np.min(arr))
+        im_arr.append(Image.fromarray(plot_arr.reshape((15,15))).convert('L'))
+        
+    return im_arr
+
+
+def _make_im(df_slice: pd.DataFrame) -> np.ndarray:
     """
     Function returns a normalized (15,15,3) array from given slice of DataFrame
     Order of stacking is 'i','v','T'
