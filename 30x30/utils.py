@@ -84,10 +84,7 @@ def check_accuracy(loader, model):
         for images, labels in loader:
             x = images.to(device=device, dtype=dtype)
             y = labels.to(device=device, dtype=dtype)
-            scores = model(x)
-            # Arbitrarily selected 1e-3 for now
-            # Is this okay? Rounding y -> Either 1.0000 or -1.0000
-            # Only if scores >= 0.9995, will we consider answer right 
+            scores = model(x) 
             num_correct += (abs(scores - torch.round(y,decimals=3))<=1e-2).sum()
             num_samples += scores.size(0)
         acc = float(num_correct) / num_samples
