@@ -145,14 +145,15 @@ class SqueezeNet(nn.Module):
                  nheads=2,
                  mlp_ratio=4.0,
                  num_classes=1,
-                 positional_embedding=True) -> None:
+                 positional_embedding=True,
+                 seq_pool = True) -> None:
         super().__init__()
         self.tokenizer = ConvTokenizer(in_channels, embedding_dim, kernel_size, stride, padding,
                                        avgpool_kernel, avgpool_stride, avgpool_padding)
         
-        seq_len = 32 #self.tokenizer.seq_len(in_channels, img_size, img_size)
+        seq_len = self.tokenizer.seq_len(in_channels, img_size, img_size)
         dim_feedforward = int(embedding_dim*mlp_ratio)
-        seq_pool = True
+        
         self.regressor = RegressionTransformer(embedding_dim, nheads, seq_len,
                                          num_encoder_layers, dim_feedforward, dropout, attn_dropout, mlp_ratio,
                                          num_classes, seq_pool, positional_embedding)
