@@ -153,7 +153,6 @@ class SqueezeNet(nn.Module):
         seq_len = 32 #self.tokenizer.seq_len(in_channels, img_size, img_size)
         dim_feedforward = int(embedding_dim*mlp_ratio)
         seq_pool = True
-        # self.regressor = RegressionTransformer()
         self.regressor = RegressionTransformer(embedding_dim, nheads, seq_len,
                                          num_encoder_layers, dim_feedforward, dropout, attn_dropout, mlp_ratio,
                                          num_classes, seq_pool, positional_embedding)
