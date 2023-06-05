@@ -1,6 +1,8 @@
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from utils import zero_initialize
+from tokenizer import * 
+from conv_transformer import *
 
 # https://discuss.pytorch.org/t/how-to-pad-one-side-in-pytorch/21212
 # https://pytorch.org/docs/stable/generated/torch.nn.ReflectionPad2d.html#torch.nn.ReflectionPad2d
@@ -110,25 +112,31 @@ class SqueezeNet(nn.Module):
     def forward(self, x):
         x1 = self.conv1(x)
         x2 = self.squeeze2(x1)
+
         # Simple residual link
         x3 = self.squeeze3(x2) + x2
+        
         x4 = self.squeeze4(x3)
         x5 = self.maxpool5(x4)
         x6 = self.squeeze6(x5)
+        
         # Simple residual link
         x7 = self.squeeze7(x6) + x6
+        
         x8 = self.squeeze8(x7)
         x9 = self.maxpool9(x8)
+        
         # Complex residual link
         x10 = self.squeeze10(x9) + F.conv2d(x9, self.res_link1.weight)
+        
         x11 = self.conv11(x10)
         relu_x11 = F.relu(x11)
         x12 = self.conv12(relu_x11)
         relu_x12 = F.relu(x12)
         return self.fc13(relu_x12)
     
-    
-    class ConvTransformer(nn.Module):
+
+class ConvTransformer(nn.Module):
     def __init__(self,
                  img_size=30,
                  embedding_dim=64,
@@ -145,15 +153,15 @@ class SqueezeNet(nn.Module):
                  nheads=2,
                  mlp_ratio=4.0,
                  num_classes=1,
-                 positional_embedding=True,
-                 seq_pool = True) -> None:
+                 positional_embedding=True, 
+                 seq_pool=True) -> None:
         super().__init__()
         self.tokenizer = ConvTokenizer(in_channels, embedding_dim, kernel_size, stride, padding,
                                        avgpool_kernel, avgpool_stride, avgpool_padding)
         
         seq_len = self.tokenizer.seq_len(in_channels, img_size, img_size)
         dim_feedforward = int(embedding_dim*mlp_ratio)
-        
+        # self.regressor = RegressionTransformer()
         self.regressor = RegressionTransformer(embedding_dim, nheads, seq_len,
                                          num_encoder_layers, dim_feedforward, dropout, attn_dropout, mlp_ratio,
                                          num_classes, seq_pool, positional_embedding)
