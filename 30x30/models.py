@@ -126,3 +126,38 @@ class SqueezeNet(nn.Module):
         x12 = self.conv12(relu_x11)
         relu_x12 = F.relu(x12)
         return self.fc13(relu_x12)
+    
+    
+    class ConvTransformer(nn.Module):
+    def __init__(self,
+                 img_size=30,
+                 embedding_dim=64,
+                 in_channels=3,
+                 kernel_size=(1,16),
+                 stride=(1,16),
+                 padding=1,
+                 avgpool_kernel=(1,2),
+                 avgpool_stride=(1,2),
+                 avgpool_padding=0,
+                 dropout=0.,
+                 attn_dropout=0.1,
+                 num_encoder_layers=3,
+                 nheads=2,
+                 mlp_ratio=4.0,
+                 num_classes=1,
+                 positional_embedding=True) -> None:
+        super().__init__()
+        self.tokenizer = ConvTokenizer(in_channels, embedding_dim, kernel_size, stride, padding,
+                                       avgpool_kernel, avgpool_stride, avgpool_padding)
+        
+        seq_len = 32 #self.tokenizer.seq_len(in_channels, img_size, img_size)
+        dim_feedforward = int(embedding_dim*mlp_ratio)
+        seq_pool = True
+        # self.regressor = RegressionTransformer()
+        self.regressor = RegressionTransformer(embedding_dim, nheads, seq_len,
+                                         num_encoder_layers, dim_feedforward, dropout, attn_dropout, mlp_ratio,
+                                         num_classes, seq_pool, positional_embedding)
+
+    def forward(self, x):
+        tokens = self.tokenizer(x)
+        return self.regressor(tokens) 
