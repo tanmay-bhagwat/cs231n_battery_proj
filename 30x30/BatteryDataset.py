@@ -5,6 +5,7 @@ from PIL import Image
 from torchvision import transforms
 import os
 
+
 # Refer to this: https://pytorch.org/tutorials/beginner/basics/data_tutorial.html
 # Also this: https://pytorch.org/tutorials/beginner/data_loading_tutorial.html#dataset-class
 
@@ -12,12 +13,11 @@ class BatteryDataset(torch.utils.data.Dataset):
     """
     Derived class from the abstract dataset class from torch. 
     Retrieves samples as Image object (image) and capacity (label), using annotations file
-    By default, PIL to Tensor transform is applied on all images read in
     """
-    def __init__(self, csv_file, root_dir, transform=transforms.PILToTensor()):
+    def __init__(self, csv_file, root_dir):
         self.image_dataset = pd.read_csv(csv_file)
         self.root_dir = root_dir
-        self.transform = transform
+        # self.transform = transform
 
     def __len__(self):
         return len(self.image_dataset)
@@ -31,9 +31,15 @@ class BatteryDataset(torch.utils.data.Dataset):
         img_path = os.path.join(self.root_dir, self.image_dataset.iloc[idx, 2])
         image = Image.open(img_path)
         label = np.array([self.image_dataset.iloc[idx, 1]], dtype=np.float32)
-
-        if self.transform is not None:
-            image = self.transform(image)
+        torch.manual_seed(10)
+        transform = transforms.Compose([transforms.ToPILImage(),
+                                        transforms.RandomChoice(transforms.GaussianBlur((15,15),(0.5,0.9)), 
+                                                               transforms.ColorJitter(brightness=0.5, saturation=0.5),
+                                                               transforms.RandomInvert(),
+                                                               transforms.RandomAffine(degrees=5, shear=(0,0,-3,3)),
+                                                               p=0.7),
+                                        transforms.ToTensor()])
+        image = transform(image)
 
         if image.dtype != torch.float32:
             image = image.float()
