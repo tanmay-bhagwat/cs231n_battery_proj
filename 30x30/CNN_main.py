@@ -10,7 +10,8 @@ from torch.utils.data import DataLoader, sampler, Subset
 
 # cwd to directory containing the json_data directory
 # This directory will be considered the parent directory for the json_data, image_dir_C1, image_dir_OCV directories later
-os.chdir(r'/Users/tanmay/Desktop/CS231N/Project/Code_files/')
+# work_path = path/to/parent_dir
+os.chdir(work_path)
 
 # Generating the dataset
 # Select the test cell, mode, pass to build_dataset()
