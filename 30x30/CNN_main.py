@@ -31,7 +31,6 @@ train_loader = DataLoader(batt_dataset, batch_size=128, sampler = sampler.Subset
                         num_workers=4)
 validation_loader = DataLoader(batt_dataset, batch_size=128, sampler = sampler.SubsetRandomSampler(range(NUM_TRAIN, len(batt_dataset))),
                         num_workers=4)
-test_loader = DataLoader(batt_dataset, batch_size=128, num_workers=4)
 
 # Enumerate and print the batches that each of the loaders has
 for i_batch, sample_batched in enumerate(train_loader):
@@ -44,9 +43,9 @@ model = SqueezeNet().to(device)
 # L2 regularization via weight_decay: https://pytorch.org/docs/stable/generated/torch.optim.Adam.html
 optimizer = optim.Adam(model.parameters(), lr=3e-3, weight_decay=1e-5)
 train_model(model, optimizer, train_loader, val_loader=validation_loader, epochs=20)
-torch.save(model.state_dict(), 'SqueezeNet30_DC.pth')
 
 #     loader = DataLoader(test_dataset, batch_size=32, num_workers=4)
 #     model = Net()
 #     model.load_state_dict(torch.load('Net30.pth'))
 #     test_model(model, loader)
+torch.save(model.state_dict(), 'SqueezeNet30_DC.pth')
